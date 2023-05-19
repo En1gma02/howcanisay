@@ -23,12 +23,19 @@ def main():
         label_visibility="hidden",
     )
 
+    # center_column.button(
+    #     ":studio_microphone: Say something to translate...", use_container_width=True
+    # )
+
     st.session_state.source_lang = detect_source_language(source_text)
 
     center_column.title("in")
 
     destination_language = center_column.selectbox(
-        "Select Language", supported_languages, key="target_lang", label_visibility="hidden"
+        "Select Language",
+        sorted(supported_languages.keys()),
+        key="target_lang",
+        label_visibility="hidden",
     )
 
     logger.debug(f"Selected destination language as {destination_language}")
@@ -56,9 +63,12 @@ def main():
 
     col2.markdown(f"**{st.session_state.translation}**")
 
-    col2.audio(None, format="audio/mp3")
+    # with st.spinner("Converting to audio..."):
 
-    st.divider()
+    if st.session_state.translation:
+        col2.audio("translation.mp3", format="audio/mp3")
+
+        st.divider()
 
 
 if __name__ == "__main__":

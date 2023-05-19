@@ -4,6 +4,9 @@ import openai
 import streamlit as st
 
 from logger import logger
+from languages import supported_languages
+from text_to_speech import convert_text_to_mp3
+
 
 openai.api_key = (
     os.getenv("OPENAI_API_KEY_HOWCANISAY_AI") or st.secrets["OPENAI_API_KEY_HOWCANISAY_AI"]
@@ -21,12 +24,16 @@ def detect_source_language(text: str) -> str:
 
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt=f"Which language is '{text}' written in? Explain in 1 word.",
+        prompt=f"Which language is '{text}' written in? Explain in 1 word without punctuation.",
         temperature=0,
     )
 
     source_language = response["choices"][0]["text"].strip()
     logger.debug(f"Detected source language: {source_language}")
+
+    if source_language.capitalize() not in supported_languages.keys():
+        st.error(f"Detected source language '{source_language}' is not supported!")
+        st.stop()
 
     return source_language
 
@@ -47,18 +54,20 @@ def translate() -> None:
         messages=[
             {
                 "role": "system",
-                "content": f"You are a helpful assistant that translates {source_language} text to {target_language}.",
+                "content": f"You are a multi-language translator that translates {source_language} text to {target_language}.",
             },
             {
                 "role": "user",
-                "content": f"Translate the following {source_language} text to {target_language}: '{text}'.",
+                "content": f"Translate the following {source_language} text to {target_language} without quotes: '{text}'",
             },
         ],
         temperature=0,
     )
 
     st.session_state.translation = (
-        response["choices"][0]["message"]["content"].strip().replace("'", "")
+        response["choices"][0]["message"]["content"].strip().replace("'", "").replace('"', "")
     )
 
     logger.debug(f"Translation: {st.session_state.translation}")
+
+    convert_text_to_mp3(st.session_state.translation, supported_languages[target_language])
