@@ -15,8 +15,11 @@ Run the following commands in the project directory to install the required pack
 
 ## How to run
 
-* Run `streamlit run app.py` on local or go to [app page](https://howcanisay.streamlit.app/).
+* Run `streamlit run app.py` on local.
 
+    or
+
+    [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://howcanisay.streamlit.app)
 
 ---
 
