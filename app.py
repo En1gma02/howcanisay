@@ -6,76 +6,6 @@ from languages import supported_languages
 from translator import detect_source_language, translate
 
 
-def get_audio():
-    """Get audio to translate from user"""
-
-    audio_script = """
-    <html>
-        <audio id="audioPlayer"></audio>
-        <button id="startButton">Start Recording</button>
-        <button id="stopButton">Stop Recording</button>
-        <div id="audioContainer"></div>
-
-        <script type="text/javascript">
-        const audioPlayer = document.getElementById('audioPlayer');
-        const startButton = document.getElementById('startButton');
-        const stopButton = document.getElementById('stopButton');
-        const audioContainer = document.getElementById('audioContainer');
-
-        let mediaRecorder;
-        let recordedChunks = [];
-
-        // Request access to the user's microphone
-        navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(function(stream) {
-            // Create a MediaRecorder instance
-            mediaRecorder = new MediaRecorder(stream);
-
-            // Set the audio element as the source of the recorded audio
-            audioPlayer.srcObject = stream;
-
-            // Listen for dataavailable event to collect recorded audio data
-            mediaRecorder.addEventListener('dataavailable', function(event) {
-                recordedChunks.push(event.data);
-            });
-
-            // Listen for startButton click event to start recording
-            startButton.addEventListener('click', function() {
-                recordedChunks = []; // Clear the previously recorded data
-                mediaRecorder.start();
-                console.log('Recording started...');
-            });
-
-            // Listen for stopButton click event to stop recording
-            stopButton.addEventListener('click', function() {
-                mediaRecorder.stop();
-                console.log('Recording stopped...');
-            });
-
-            // Listen for mediaRecorder stop event to handle the recorded data
-            mediaRecorder.addEventListener('stop', function() {
-                // Create a Blob from the recorded chunks
-                const audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
-
-                const audioElement = document.createElement('audio');
-                audioElement.controls = true;
-                const audioURL = URL.createObjectURL(audioBlob);
-                audioElement.src = audioURL;
-                audioContainer.appendChild(audioElement);
-                audioElement.play();
-            });
-        })
-        .catch(function(error) {
-            // Handle error when microphone access is denied or not available
-            console.error('Error accessing microphone:', error);
-        });
-    </script>
-    </html>
-    """
-
-    components.html(audio_script)
-
-
 def main():
     """Entry point"""
 
@@ -94,19 +24,13 @@ def main():
         label_visibility="hidden",
     )
 
-    center_column.button(
-        ":studio_microphone: Say something to translate...",
-        on_click=get_audio,
-        use_container_width=True,
-    )
-
     st.session_state.source_lang = detect_source_language(source_text)
 
     center_column.title("in")
 
     destination_language = center_column.selectbox(
         "Select Language",
-        sorted(supported_languages.keys()),
+        sorted(list(supported_languages.keys())[1:]),
         key="target_lang",
         label_visibility="hidden",
     )

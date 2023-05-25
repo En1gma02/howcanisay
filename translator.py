@@ -29,11 +29,12 @@ def detect_source_language(text: str) -> str:
     )
 
     source_language = response["choices"][0]["text"].strip()
-    logger.debug(f"Detected source language: {source_language}")
 
-    if source_language.capitalize() not in supported_languages.keys():
+    if source_language.capitalize() not in list(supported_languages.keys())[1:]:
         st.error(f"Detected source language '{source_language}' is not supported!")
         st.stop()
+
+    logger.debug(f"Detected source language: {source_language}")
 
     return source_language
 
@@ -54,7 +55,7 @@ def translate() -> None:
         messages=[
             {
                 "role": "system",
-                "content": f"You are a multi-language translator that translates {source_language} text to {target_language}.",
+                "content": f"You are a multi-language translator.",
             },
             {
                 "role": "user",

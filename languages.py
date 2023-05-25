@@ -56,7 +56,5 @@ supported_languages = {
     "Ukrainian": "uk",
     "Urdu": "ur",
     "Vietnamese": "vi",
-    "Chinese (Simplified)": "zh-CN",
-    "Chinese (Mandarin/Taiwan)": "zh-TW",
-    "Chinese (Mandarin)": "zh",
+    "Chinese": "zh-CN",
 }
