@@ -33,7 +33,7 @@ supported_languages = {
     "Malayalam": "ml",
     "Marathi": "mr",
     "Malay": "ms",
-    "Myanmar (Burmese)": "my",
+    "Burmese": "my",
     "Nepali": "ne",
     "Dutch": "nl",
     "Norwegian": "no",
