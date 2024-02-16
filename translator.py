@@ -1,6 +1,6 @@
 import os
 
-import openai
+from openai import OpenAI
 import streamlit as st
 
 from logger import logger
@@ -8,7 +8,8 @@ from languages import supported_languages
 from text_to_speech import convert_text_to_mp3
 
 
-openai.api_key = (
+client = OpenAI()
+client.api_key = (
     os.getenv("OPENAI_API_KEY_HOWCANISAY_AI") or st.secrets["OPENAI_API_KEY_HOWCANISAY_AI"]
 )
 
@@ -22,13 +23,19 @@ def detect_source_language(text: str) -> str:
     :returns: Detected language of source text
     """
 
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=f"Which language is '{text}' written in? Explain in 1 word without punctuation.",
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a multi-language translator."},
+            {
+                "role": "user",
+                "content": f"Which language is '{text}' written in? Explain in 1 word without punctuation.",
+            },
+        ],
         temperature=0,
     )
 
-    source_language = response["choices"][0]["text"].strip()
+    source_language = response.choices[0].message.content.strip()
 
     if source_language.capitalize() not in list(supported_languages.keys())[1:]:
         st.error(f"Detected source language '{source_language}' is not supported!")
@@ -50,12 +57,12 @@ def translate() -> None:
     logger.debug(f"Source language: {source_language}")
     logger.debug(f"Target language: {target_language}")
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
                 "role": "system",
-                "content": f"You are a multi-language translator.",
+                "content": "You are a multi-language translator.",
             },
             {
                 "role": "user",
@@ -66,7 +73,7 @@ def translate() -> None:
     )
 
     st.session_state.translation = (
-        response["choices"][0]["message"]["content"].strip().replace("'", "").replace('"', "")
+        response.choices[0].message.content.strip().replace("'", "").replace('"', "")
     )
 
     logger.debug(f"Translation: {st.session_state.translation}")
