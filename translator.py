@@ -8,10 +8,10 @@ from languages import supported_languages
 from text_to_speech import convert_text_to_mp3
 
 
-client = OpenAI()
-client.api_key = (
+openai_api_key = (
     os.getenv("OPENAI_API_KEY_HOWCANISAY_AI") or st.secrets["OPENAI_API_KEY_HOWCANISAY_AI"]
 )
+client = OpenAI(api_key=openai_api_key)
 
 
 def detect_source_language(text: str) -> str:
